@@ -23,10 +23,21 @@ pipeline {
             }
           }
         }
-        // stage('Terraform plan') {
-        //   steps {
-        //     sh 'terraform plan -out'
-        //   }
-        // }
+        stage('Testing') {
+          steps {
+            withNPM(npmrcConfig: '68f2a11e-9645-4c5f-a754-36648b8a3e1c') {
+                sh '''
+                    npm run test
+                '''
+            }
+          }
+        }
+        stage('Deploy to S3') {
+            steps {
+                withAWS([credentials: "	private"]) {
+                    s3Upload(file: 'build', bucket: 'luantd.tech', path: 'react-app/')
+                }
+            }
+        }
   }
 }
