@@ -10,7 +10,7 @@ agent any
   stages {
         stage('Build Package') {
           steps {
-            withNPM(npmrcConfig: 'CustomNpmrcConfig') {
+            withNPM(npmrcConfig: '68f2a11e-9645-4c5f-a754-36648b8a3e1c') {
                 sh '''
                     npm version
                     npm install
