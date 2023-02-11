@@ -1,6 +1,10 @@
 pipeline {
-//   agent { docker 'node:6.3' }
-agent any
+    agent {
+        docker {
+            image 'node:7.4'
+        }
+    }
+// agent any
 // tools {nodejs "nodejs"}
 
 //   parameters {
