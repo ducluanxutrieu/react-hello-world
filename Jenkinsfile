@@ -1,7 +1,7 @@
 pipeline {
 //   agent { docker 'node:6.3' }
 agent any
-tools {nodejs "nodejs"}
+// tools {nodejs "nodejs"}
 
 //   parameters {
 //     string(name: 'gitBranch', defaultValue: 'master', description: 'This is the first param')
@@ -10,13 +10,13 @@ tools {nodejs "nodejs"}
   stages {
         stage('Build Package') {
           steps {
-            // withNPM() {
+            withNPM(npmrcConfig: 'CustomNpmrcConfig') {
                 sh '''
                     npm version
                     npm install
                     npm run build
                 '''
-            // }
+            }
           }
         }
         // stage('Terraform plan') {
