@@ -25,6 +25,7 @@ jobs:
                   command: |
                     npm run test
             - save_cache:
+                  paths: [node_modules]
                   key: nodejs
     check-dockerfile-format:
         docker:
