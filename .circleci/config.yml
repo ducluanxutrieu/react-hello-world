@@ -7,7 +7,7 @@ jobs:
     build-packages:
         docker:
             - image: cimg/node:19.9.0
-        working_directory: ~/helloworld_app
+        working_directory: ~/helloworld
         steps:
             - checkout
             - restore_cache:
@@ -68,8 +68,8 @@ jobs:
                   command: |
                       aws cloudformation deploy \
                         --template-file .circleci/files/ecr.yml \
-                        --tags project=helloworld_app \
-                        --stack-name "helloworld_app"
+                        --tags project=helloworld \
+                        --stack-name "helloworld"
 
 workflows:
   default:
