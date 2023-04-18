@@ -1,13 +1,13 @@
 Description: >
-  Elastic Container Registry for helloworld_app.
+  Elastic Container Registry for helloworld.
 
 Resources:
   ECR:
     Type: AWS::ECR::Repository
     Properties:
-        RepositoryName: "helloworld_app"
-    ImageScanningConfiguration:
-        ScanOnPush: true
+      RepositoryName: "helloworld"
+      ImageScanningConfiguration:
+          ScanOnPush: true
 
 Outputs:
   Arn:
