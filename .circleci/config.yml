@@ -4,16 +4,35 @@
 #
 version: 2
 jobs:
-    build:
+    build-packages:
+        docker:
+            - image: cimg/node:19.9.0
+        working_directory: ~/helloworld_app
+        steps:
+            - checkout
+            - restore_cache:
+                  keys:
+                      - nodejs
+            - run:
+                  name: install dependencies
+                  command: npm install
+            - run:
+                  name: build packages
+                  command: npm run build
+            - run:
+                  name: run test
+                  command: npm run test
+            - save_cache:
+                  keys:
+                      - nodejs
+    check-dockerfile-format:
         docker:
             # Use the same Docker base as the project
             - image: python:3.7.11-stretch
 
         working_directory: ~/helloworld_app
-
         steps:
             - checkout
-
             # Download and cache dependencies
             - restore_cache:
                   keys:
@@ -41,27 +60,6 @@ jobs:
                   command: |
                       . venv/bin/activate
                       make lint
-    build-image:
-        docker:
-            - image: cimg/node:19.9.0
-        working_directory: ~/helloworld_app
-        steps:
-            - checkout
-            - restore_cache:
-                  keys:
-                      - nodejs
-            - run:
-                  name: install dependencies
-                  command: npm install
-            - run:
-                  name: build packages
-                  command: npm run build
-            - run:
-                  name: run test
-                  command: npm run test
-            - save_cache:
-                  keys:
-                      - nodejs
     create-scr:
         docker:
             - image: amazon/aws-cli
