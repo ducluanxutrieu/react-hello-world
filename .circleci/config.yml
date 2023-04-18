@@ -72,3 +72,14 @@ jobs:
                         --template-file .circleci/files/ecr.yml \
                         --tags project=helloworld_app \
                         --stack-name "helloworld_app"
+
+workflows:
+  default:
+    jobs:
+      - build-packages
+      - check-dockerfile-format:
+          requires: [build-packages]
+      - create-scr:
+          requires: [check-dockerfile-format]
+    #   - scan-backend:
+    #       requires: [build-backend]
