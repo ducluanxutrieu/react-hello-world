@@ -74,4 +74,3 @@ jobs:
                         --template-file .circleci/files/ecr.yml \
                         --tags project=helloworld_app \
                         --stack-name "helloworld_app"
-    
