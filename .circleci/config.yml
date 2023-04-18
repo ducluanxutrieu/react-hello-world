@@ -15,13 +15,16 @@ jobs:
                       - nodejs
             - run:
                   name: install dependencies
-                  command: npm install
+                  command: |
+                    npm install
             - run:
                   name: build packages
-                  command: npm run build
+                  command: |
+                    npm run build
             - run:
                   name: run test
-                  command: npm run test
+                  command: |
+                    npm run test
             - save_cache:
                   keys:
                       - nodejs
