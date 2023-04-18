@@ -70,6 +70,31 @@ jobs:
                         --template-file .circleci/files/ecr.yml \
                         --tags project=helloworld \
                         --stack-name "helloworld"
+    build-docker-image:
+        docker:
+            - image: docker:cli
+        working_directory: ~/helloworld
+        steps:
+            - checkout
+            - run:
+                name: build docker image
+                command: |
+                    docker build -t ducluanxutrieu/helloworld-k8s .
+            - deploy:
+                name: Push application Docker image
+                command: |
+                    account_id=$(aws sts get-caller-identity --query 'Account' --output text)
+                    app_name=helloworld
+                    repo=$(aws cloudformation --region us-east-1 describe-stacks --stack-name ${app_name} --query 'Stacks[0].Outputs[?OutputKey==`RepositoryUri`].OutputValue' --output text)
+                    # Login ECR
+                    aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${account_id}.dkr.ecr.us-east-1.amazonaws.com
+                    # Build docker image
+                    docker build -t ${app_name} .
+                    # Add tags for that image
+                    docker tag ${app_name}:latest ${account_id}.dkr.ecr.us-east-1.amazonaws.com/${app_name}:latest
+                    # Push docker image to ECR
+                    docker push ${account_id}.dkr.ecr.us-east-1.amazonaws.com/${app_name}:latest
+            
 
 workflows:
   default:
@@ -78,5 +103,7 @@ workflows:
       - check-dockerfile-format:
           requires: [build-packages]
       - create-scr
+      - build-docker-image:
+          requires: [create-scr, check-dockerfile-format]
     #   - scan-backend:
     #       requires: [build-backend]
