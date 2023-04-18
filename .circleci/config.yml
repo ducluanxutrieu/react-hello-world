@@ -44,7 +44,6 @@ jobs:
                   command: |
                       python3 -m venv venv
                       . venv/bin/activate
-                      make install
                       # Install hadolint
                       wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 &&\
                       chmod +x /bin/hadolint
@@ -78,7 +77,6 @@ workflows:
       - build-packages
       - check-dockerfile-format:
           requires: [build-packages]
-      - create-scr:
-          requires: [check-dockerfile-format]
+      - create-scr
     #   - scan-backend:
     #       requires: [build-backend]
