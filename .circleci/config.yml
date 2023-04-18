@@ -11,8 +11,7 @@ jobs:
         steps:
             - checkout
             - restore_cache:
-                  keys:
-                      - nodejs
+                  keys: [nodejs]
             - run:
                   name: install dependencies
                   command: |
@@ -26,7 +25,7 @@ jobs:
                   command: |
                     npm run test
             - save_cache:
-                  keys:
+                  key:
                       - nodejs
     check-dockerfile-format:
         docker:
