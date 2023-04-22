@@ -80,9 +80,9 @@ jobs:
       - run:
           name: build docker image
           command: |
-            apk update && apk add --no-cache wget
-            wget https://nodejs.org/dist/v18.3.0/node-v18.3.0-linux-x64.tar.xz && tar -xf node-v18.3.0-linux-x64.tar.xz
-            apk add --update nodejs npm
+            apk update && apk add --no-cache wget aws-cli nodejs npm
+            # wget https://nodejs.org/dist/v18.3.0/node-v18.3.0-linux-x64.tar.xz && tar -xf node-v18.3.0-linux-x64.tar.xz
+            # apk add --update nodejs npm
             npm install
             npm run build
             docker build -t helloworld .
