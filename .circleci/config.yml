@@ -100,25 +100,25 @@ jobs:
       - run:
         name: Install awscli
         command: curl --silent "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && unzip awscliv2.zip && sudo ./aws/install
-      - run:
+      - install_eksctl:
         name: Install eksctl
         command: curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp && sudo mv /tmp/eksctl /usr/local/bin
-      - run:
+      - install_kubectl:
         name: Install and configure kubectl
         command: curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl && kubectl version --client
-      - run:
+      - install_iam_authenticator:
         name: Install and configure kubectl aws-iam-authenticator
         command: curl -Lo aws-iam-authenticator https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v0.5.9/aws-iam-authenticator_0.5.9_linux_amd64 && chmod +x ./aws-iam-authenticator && mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
-      - run:
+      - create_eks_cluster:
         name: Create EKS Cluster
         command: eksctl create cluster -f kubernetes/eks-config.yml
-      - run:
+      - k8s_deploy:
         name: Run kubernetes deployment
         command: kubectl create -f kubernetes/helloworld-deploy.yaml
-      - run:
+      - k8s_service:
         name: Run kubernetes service
         command: kubectl create -f kubernetes/helloworld-service.yaml
-      - run:
+      - get_all:
         name: Get all info
         command: kubectl get all
 workflows:
