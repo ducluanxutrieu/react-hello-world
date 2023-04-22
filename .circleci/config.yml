@@ -72,7 +72,7 @@ jobs:
               --stack-name "helloworld"
   build-docker-image:
     docker:
-      - image: docker:18.06.3-ce-git
+      - image: docker:cli
     working_directory: ~/helloworld
     steps:
       - checkout
