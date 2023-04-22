@@ -72,10 +72,11 @@ jobs:
               --stack-name "helloworld"
   build-docker-image:
     docker:
-      - image: docker:cli
+      - image: docker:18.06.3-ce-git
     working_directory: ~/helloworld
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           name: build docker image
           command: |
