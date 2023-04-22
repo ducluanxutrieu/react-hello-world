@@ -1,0 +1,22 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: helloworld
+  region: us-east-1
+
+vpc:
+  subnets:
+    private:
+      us-east-1a: { id: subnet-07eafaf23d0e2dc48 }
+      us-east-1b: { id: subnet-0155b80295b6e142c }
+      us-east-1c: { id: subnet-0f2c5626c5ee1e83d }
+
+nodeGroups:
+  - name: ng-1-workers
+    labels: { role: workers }
+    instanceType: t2.micro
+    desiredCapacity: 1
+    privateNetworking: true
+    minSize: 1
+    maxSize: 4

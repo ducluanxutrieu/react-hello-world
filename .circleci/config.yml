@@ -4,96 +4,123 @@
 #
 version: 2.1
 jobs:
-    build-packages:
-        docker:
-            - image: cimg/node:19.9.0
-        working_directory: ~/helloworld
-        steps:
-            - checkout
-            - restore_cache:
-                  keys: [nodejs]
-            - run:
-                  name: install dependencies
-                  command: |
-                    npm install
-            - run:
-                  name: build packages
-                  command: |
-                    npm run build
-            - run:
-                  name: run test
-                  command: |
-                    npm run test
-            - save_cache:
-                  paths: [node_modules]
-                  key: nodejs
-    check-dockerfile-format:
-        docker:
-            # Use the same Docker base as the project
-            - image: python:3.7.11-stretch
+  build-packages:
+    docker:
+      - image: cimg/node:19.9.0
+    working_directory: ~/helloworld
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [nodejs]
+      - run:
+          name: install dependencies
+          command: |
+            npm install
+      - run:
+          name: build packages
+          command: |
+            npm run build
+      - run:
+          name: run test
+          command: |
+            npm run test
+      - save_cache:
+          paths: [node_modules]
+          key: nodejs
+  check-dockerfile-format:
+    docker:
+      # Use the same Docker base as the project
+      - image: python:3.7.11-stretch
 
-        working_directory: ~/lint
-        steps:
-            - checkout
-            # Download and cache dependencies
-            - restore_cache:
-                  keys: [python-dependencies]
+    working_directory: ~/lint
+    steps:
+      - checkout
+      # Download and cache dependencies
+      - restore_cache:
+          keys: [python-dependencies]
 
-            - run:
-                  name: install dependencies
-                  command: |
-                      python3 -m venv venv
-                      . venv/bin/activate
-                      # Install hadolint
-                      wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 &&\
-                      chmod +x /bin/hadolint
-            - save_cache:
-                  paths:
-                      - ./venv
-                  key: python-dependencies
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            # Install hadolint
+            wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 &&\
+            chmod +x /bin/hadolint
+      - save_cache:
+          paths:
+            - ./venv
+          key: python-dependencies
 
-            # run lint!
-            - run:
-                  name: run lint
-                  command: |
-                      . venv/bin/activate
-                      hadolint Dockerfile
-    create-scr:
-        docker:
-            - image: amazon/aws-cli
-        steps:
-            - checkout
-            - run:
-                  name: Ensure back-end infrastructure exists
-                  command: |
-                      aws cloudformation deploy \
-                        --template-file .circleci/files/ecr.yml \
-                        --tags project=helloworld \
-                        --stack-name "helloworld"
-    build-docker-image:
-        docker:
-            - image: docker:18.06.3-ce-git
-        working_directory: ~/helloworld
-        steps:
-            - checkout
-            - run:
-                name: build docker image
-                command: |
-                    docker build -t helloworld .
-            - deploy:
-                name: Push application Docker image
-                command: |
-                    account_id=$(aws sts get-caller-identity --query 'Account' --output text)
-                    app_name=helloworld
-                    repo=$(aws cloudformation --region us-east-1 describe-stacks --stack-name ${app_name} --query 'Stacks[0].Outputs[?OutputKey==`RepositoryUri`].OutputValue' --output text)
-                    # Login ECR
-                    aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${account_id}.dkr.ecr.us-east-1.amazonaws.com
-                    # Add tags for that image
-                    docker tag ${app_name}:latest ${account_id}.dkr.ecr.us-east-1.amazonaws.com/${app_name}:latest
-                    # Push docker image to ECR
-                    docker push ${account_id}.dkr.ecr.us-east-1.amazonaws.com/${app_name}:latest
-            
-
+      # run lint!
+      - run:
+          name: run lint
+          command: |
+            . venv/bin/activate
+            hadolint Dockerfile
+  create-scr:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Ensure back-end infrastructure exists
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/ecr.yml \
+              --tags project=helloworld \
+              --stack-name "helloworld"
+  build-docker-image:
+    docker:
+      - image: docker:18.06.3-ce-git
+    working_directory: ~/helloworld
+    steps:
+      - checkout
+      - run:
+          name: build docker image
+          command: |
+            docker build -t helloworld .
+      - deploy:
+          name: Push application Docker image
+          command: |
+            account_id=$(aws sts get-caller-identity --query 'Account' --output text)
+            app_name=helloworld
+            repo=$(aws cloudformation --region us-east-1 describe-stacks --stack-name ${app_name} --query 'Stacks[0].Outputs[?OutputKey==`RepositoryUri`].OutputValue' --output text)
+            # Login ECR
+            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${account_id}.dkr.ecr.us-east-1.amazonaws.com
+            # Add tags for that image
+            docker tag ${app_name}:latest ${account_id}.dkr.ecr.us-east-1.amazonaws.com/${app_name}:latest
+            # Push docker image to ECR
+            docker push ${account_id}.dkr.ecr.us-east-1.amazonaws.com/${app_name}:latest
+  deploy-application:
+    docker:
+      - image: cimg/python:3.7-node
+    steps:
+      - checkout
+      - run:
+        name: Install awscli
+        command: curl --silent "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && unzip awscliv2.zip && sudo ./aws/install
+      - run:
+        name: Install eksctl
+        command: curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp && sudo mv /tmp/eksctl /usr/local/bin
+      - run:
+        name: Install and configure kubectl
+        command: curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl && kubectl version --client
+      - run:
+        name: Install and configure kubectl aws-iam-authenticator
+        command: curl -Lo aws-iam-authenticator https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v0.5.9/aws-iam-authenticator_0.5.9_linux_amd64 && chmod +x ./aws-iam-authenticator && mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
+      - run:
+        name: Create EKS Cluster
+        command: eksctl create cluster -f kubernetes/eks-config.yml
+      - run:
+        name: Run kubernetes deployment
+        command: kubectl create -f kubernetes/helloworld-deploy.yaml
+      - run:
+        name: Run kubernetes service
+        command: kubectl create -f kubernetes/helloworld-service.yaml
+      - run:
+        name: Get all info
+        command: kubectl get all
 workflows:
   default:
     jobs:
@@ -103,5 +130,7 @@ workflows:
       - create-scr
       - build-docker-image:
           requires: [create-scr, check-dockerfile-format]
+      - deploy-application:
+          requires: [build-docker-image]
     #   - scan-backend:
     #       requires: [build-backend]

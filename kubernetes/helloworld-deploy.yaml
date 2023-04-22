@@ -1,0 +1,30 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworld-deploy
+  labels:
+    name: helloworld-deploy
+    app: helloworld-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: helloworld-pod
+      app: helloworld-app
+  template:
+    metadata:
+      name: helloworld-pod
+      labels:
+        name: helloworld-pod
+        app: helloworld-app
+    spec:
+      containers:
+      - name: helloworld
+        image: 702760358169.dkr.ecr.us-east-1.amazonaws.com/helloworld:latest
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 80
