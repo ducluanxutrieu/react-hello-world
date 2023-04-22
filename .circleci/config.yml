@@ -72,7 +72,7 @@ jobs:
               --stack-name "helloworld"
   build-docker-image:
     docker:
-      - image: docker:18.06.3-ce-git
+      - image: docker:cli
     working_directory: ~/helloworld
     steps:
       - checkout
@@ -80,6 +80,7 @@ jobs:
       - run:
           name: build docker image
           command: |
+            
             docker build -t helloworld .
       - deploy:
           name: Push application Docker image
