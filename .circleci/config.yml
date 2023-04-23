@@ -58,7 +58,7 @@ jobs:
           command: |
             . venv/bin/activate
             hadolint Dockerfile
-  create-ECR:
+  create-ecr:
     docker:
       - image: amazon/aws-cli
     steps:
@@ -129,9 +129,9 @@ workflows:
       - build-packages
       - check-dockerfile-format:
           requires: [build-packages]
-      - create-scr
+      - create-ecr
       - build-docker-image:
-          requires: [create-scr, check-dockerfile-format]
+          requires: [create-ecr, check-dockerfile-format]
       - deploy-application:
           requires: [build-docker-image]
     #   - scan-backend:
