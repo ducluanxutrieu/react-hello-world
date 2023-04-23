@@ -58,7 +58,7 @@ jobs:
           command: |
             . venv/bin/activate
             hadolint Dockerfile
-  create-scr:
+  create-ECR:
     docker:
       - image: amazon/aws-cli
     steps:
