@@ -115,7 +115,8 @@ jobs:
               # Install and configure kubectl aws-iam-authenticator
               curl -Lo aws-iam-authenticator https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v0.6.3/aws-iam-authenticator_0.6.3_linux_amd64 && chmod +x ./aws-iam-authenticator && mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
               # Check cluster is existing
-              ./create_k8s.sh || update_k8s.sh
+              chmod +x create_k8s.sh update_k8s.sh
+              ./create_k8s.sh || ./update_k8s.sh
 workflows:
   default:
     jobs:
