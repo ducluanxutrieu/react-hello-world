@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
       - name: helloworld
-        image: 702760358169.dkr.ecr.us-east-1.amazonaws.com/helloworld:latest
+        image: 723035279882.dkr.ecr.us-east-1.amazonaws.com/helloworld:latest
         resources:
           requests:
             cpu: 100m
