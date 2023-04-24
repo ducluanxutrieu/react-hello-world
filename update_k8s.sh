@@ -9,3 +9,4 @@ kubectl apply -f kubernetes/helloworld-service.yaml
 
 kubectl get all
 kubectl rollout status deployment/helloworld-deploy
+kubectl rollout history deployment/helloworld-deploy
