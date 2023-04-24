@@ -134,8 +134,8 @@ jobs:
                  sed "s|DOCKER_IMAGE_NAME|${docker_image_name}|\
                   g;s|VERSION_INFO_VALUE|<< parameters.workflow_id >>|g" > kubernetes/helloworld-deploy.yaml
               cat kubernetes/helloworld-deploy.yaml
-              chmod +x create_k8s.sh update_k8s.sh
-              ./create_k8s.sh || ./update_k8s.sh
+              chmod +x create_k8s.sh
+              ./create_k8s.sh
 workflows:
   default:
     jobs:
