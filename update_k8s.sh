@@ -1,5 +1,6 @@
 #/bin/bash
 
+echo "Update k8s"
 aws eks update-kubeconfig --name helloworld --region us-east-1
 sed -i -e 's/v1alpha1/v1beta1/' ~/.kube/config
 # Run kubernetes apply deployment

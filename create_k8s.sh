@@ -1,4 +1,7 @@
 #!/bin/bash
+
+echo "Create k8s"
+
 # Create EKS Cluster
 eksctl create cluster -f kubernetes/eks-config.yml
 
