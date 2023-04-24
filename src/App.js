@@ -7,7 +7,7 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Hello DevOps class. I'm Luan. Whenever you saw this message, it mean that you install this application sucessfully
+          Hello Udacity DevOps class. I'm Luan. Whenever you saw this message, it mean that you install this application sucessfully
         </p>
         <a
           className="App-link"
