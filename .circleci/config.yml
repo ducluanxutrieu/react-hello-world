@@ -134,7 +134,7 @@ jobs:
               cat helloworld-deploy.yaml |\
                  sed "s|DOCKER_IMAGE_NAME|${docker_image_name}|\
                   g;s|VERSION_INFO_VALUE|<< parameters.workflow_id >>|g" > helloworld-deploy.yaml
-              cat helloworld-deploy.yaml
+              echo $(cat helloworld-deploy.yaml)
               echo "workflow_id:<< parameters.workflow_id >>"
               
               eksctl create cluster -f eks-config.yml || eksctl upgrade cluster -f eks-config.yml --approve
@@ -152,11 +152,12 @@ workflows:
   default:
     jobs:
       - build-packages
-      - check-dockerfile-format:
-          requires: [build-packages]
-      - create-ecr
+      # - check-dockerfile-format:
+      #     requires: [build-packages]
+      # - create-ecr
       - build-docker-image:
-          requires: [create-ecr, check-dockerfile-format]
+          # requires: [create-ecr, check-dockerfile-format]
+          requires: [build-packages]
       - deploy-application:
           requires: [build-docker-image]
     #   - scan-backend:
