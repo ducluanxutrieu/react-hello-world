@@ -124,6 +124,9 @@ jobs:
               curl -Lo aws-iam-authenticator https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v0.6.3/aws-iam-authenticator_0.6.3_linux_amd64 && chmod +x ./aws-iam-authenticator && mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
               # Check cluster is existing
 
+      - deploy:
+          name: Deploy application to EKS cluster
+          command: |
               cd kubernetes
               # Get account name
               account_id=$(aws sts get-caller-identity --query 'Account' --output text)
@@ -145,7 +148,7 @@ jobs:
               kubectl get all
               kubectl rollout status deployment/helloworld-deploy
               kubectl rollout history deployment/helloworld-deploy
-  workflows:
+workflows:
   default:
     jobs:
       - build-packages
