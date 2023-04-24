@@ -74,6 +74,10 @@ jobs:
     docker:
       - image: docker:cli
     working_directory: ~/helloworld
+    parameters:
+      workflow_id:
+        type: string
+        default: ${CIRCLE_WORKFLOW_ID:0:7}
     steps:
       - checkout
       - setup_remote_docker
@@ -101,6 +105,10 @@ jobs:
   deploy-application:
     docker:
       - image: cimg/python:3.7-node
+    parameters:
+      workflow_id:
+        type: string
+        default: ${CIRCLE_WORKFLOW_ID:0:7}
     steps:
       - checkout
       - run:
