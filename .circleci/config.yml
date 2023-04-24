@@ -133,15 +133,15 @@ jobs:
               docker_image_name="${account_id}.dkr.ecr.us-east-1.amazonaws.com/helloworld"
               cat helloworld-deploy.yaml |\
                  sed "s|DOCKER_IMAGE_NAME|${docker_image_name}|\
-                  g;s|VERSION_INFO_VALUE|<< parameters.workflow_id >>|g" > helloworld-deploy.yaml
-              echo "helloworld-deploy:$(cat helloworld-deploy.yaml)"
+                  g;s|VERSION_INFO_VALUE|<< parameters.workflow_id >>|g" > helloworld-deployment.yaml
+              echo "helloworld-deployment:$(cat helloworld-deployment.yaml)"
               echo "workflow_id:<< parameters.workflow_id >>"
               
               eksctl create cluster -f eks-config.yml || eksctl upgrade cluster -f eks-config.yml --approve
               aws eks update-kubeconfig --name helloworld --region us-east-1
               
               # Run kubernetes deployment
-              kubectl create -f helloworld-deploy.yaml || kubectl apply -f helloworld-deploy.yaml
+              kubectl create -f helloworld-deployment.yaml || kubectl apply -f helloworld-deployment.yaml
               # Run kubernetes service
               kubectl create -f helloworld-service.yaml || kubectl apply -f helloworld-service.yaml
               
