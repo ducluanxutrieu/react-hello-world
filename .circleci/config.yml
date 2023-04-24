@@ -85,7 +85,7 @@ jobs:
             # apk add --update nodejs npm
             npm install
             npm run build
-            docker build -t helloworld .
+            docker build -t helloworld:<< parameters.workflow_id >> .
       - deploy:
           name: Push application Docker image
           command: |
@@ -95,9 +95,9 @@ jobs:
             # Login ECR
             aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${account_id}.dkr.ecr.us-east-1.amazonaws.com
             # Add tags for that image
-            docker tag ${app_name}:latest ${account_id}.dkr.ecr.us-east-1.amazonaws.com/${app_name}:latest
+            docker tag ${app_name}:<< parameters.workflow_id >> ${account_id}.dkr.ecr.us-east-1.amazonaws.com/${app_name}:<< parameters.workflow_id >>
             # Push docker image to ECR
-            docker push ${account_id}.dkr.ecr.us-east-1.amazonaws.com/${app_name}:latest
+            docker push ${account_id}.dkr.ecr.us-east-1.amazonaws.com/${app_name}:<< parameters.workflow_id >>
   deploy-application:
     docker:
       - image: cimg/python:3.7-node
@@ -115,6 +115,17 @@ jobs:
               # Install and configure kubectl aws-iam-authenticator
               curl -Lo aws-iam-authenticator https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v0.6.3/aws-iam-authenticator_0.6.3_linux_amd64 && chmod +x ./aws-iam-authenticator && mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
               # Check cluster is existing
+              
+              # Replace the placeholders in the manifest with the intended values.
+              # This is to avoid hardcoding the image name in the manifest, to make this
+              # demo project more portable.
+              # Get account name
+              account_id=$(aws sts get-caller-identity --query 'Account' --output text)
+              docker_image_name="${account_id}.dkr.ecr.us-east-1.amazonaws.com/helloworld"
+              cat kubernetes/helloworld-deploy.yaml |\
+                 sed "s|DOCKER_IMAGE_NAME|${docker_image_name}|\
+                  g;s|VERSION_INFO_VALUE|<< parameters.workflow_id >>|g" > kubernetes/helloworld-deploy.yaml
+              
               chmod +x create_k8s.sh update_k8s.sh
               ./create_k8s.sh || ./update_k8s.sh
 workflows:
