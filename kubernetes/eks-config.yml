@@ -16,7 +16,7 @@ nodeGroups:
   - name: ng-1-workers
     labels: { role: workers }
     instanceType: t2.micro
-    desiredCapacity: 2
+    desiredCapacity: 3
     privateNetworking: true
     minSize: 2
     maxSize: 4

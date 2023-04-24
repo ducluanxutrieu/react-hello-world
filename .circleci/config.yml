@@ -123,20 +123,32 @@ jobs:
               # Install and configure kubectl aws-iam-authenticator
               curl -Lo aws-iam-authenticator https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v0.6.3/aws-iam-authenticator_0.6.3_linux_amd64 && chmod +x ./aws-iam-authenticator && mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
               # Check cluster is existing
-              
-              # Replace the placeholders in the manifest with the intended values.
-              # This is to avoid hardcoding the image name in the manifest, to make this
-              # demo project more portable.
+
+      - deploy:
+          name: Deploy application to EKS cluster
+          command: |
+              cd kubernetes
               # Get account name
               account_id=$(aws sts get-caller-identity --query 'Account' --output text)
               docker_image_name="${account_id}.dkr.ecr.us-east-1.amazonaws.com/helloworld"
-              cat kubernetes/helloworld-deploy.yaml |\
+              cat helloworld-deploy.yaml |\
                  sed "s|DOCKER_IMAGE_NAME|${docker_image_name}|\
-                  g;s|VERSION_INFO_VALUE|<< parameters.workflow_id >>|g" > kubernetes/helloworld-deploy.yaml
-              cat kubernetes/helloworld-deploy.yaml
-              chmod +x create_k8s.sh
-              ./create_k8s.sh
-workflows:
+                  g;s|VERSION_INFO_VALUE|<< parameters.workflow_id >>|g" > helloworld-deploy.yaml
+              cat helloworld-deploy.yaml
+              echo "workflow_id:<< parameters.workflow_id >>"
+              
+              eksctl create cluster -f eks-config.yml || eksctl upgrade cluster -f eks-config.yml --approve
+              aws eks update-kubeconfig --name helloworld --region us-east-1
+              
+              # Run kubernetes deployment
+              kubectl create -f helloworld-deploy.yaml || kubectl apply -f helloworld-deploy.yaml
+              # Run kubernetes service
+              kubectl create -f helloworld-service.yaml || kubectl apply -f helloworld-service.yaml
+              
+              kubectl get all
+              kubectl rollout status deployment/helloworld-deploy
+              kubectl rollout history deployment/helloworld-deploy
+  workflows:
   default:
     jobs:
       - build-packages
