@@ -146,6 +146,7 @@ jobs:
               kubectl create -f helloworld-service.yaml || kubectl apply -f helloworld-service.yaml
               
               kubectl get all
+              kubectl get nodes
               kubectl rollout status deployment/helloworld-deploy
               kubectl rollout history deployment/helloworld-deploy
 workflows:
