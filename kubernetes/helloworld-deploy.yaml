@@ -1,0 +1,35 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworld-deploy
+  labels:
+    name: helloworld-deploy
+    app: helloworld-app
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      name: helloworld-pod
+      app: helloworld-app
+  template:
+    metadata:
+      name: helloworld-pod
+      labels:
+        name: helloworld-pod
+        app: helloworld-app
+    spec:
+      containers:
+      - name: helloworld
+        image: DOCKER_IMAGE_NAME:VERSION_INFO_VALUE
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 80
