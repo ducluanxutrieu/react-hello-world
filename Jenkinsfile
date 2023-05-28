@@ -1,5 +1,9 @@
 pipeline {
-  agent { docker 'node:6.3' }
+  agent { 
+    agent {
+      label "slave"
+    }
+  }
 
 //   parameters {
 //     string(name: 'gitBranch', defaultValue: 'master', description: 'This is the first param')
@@ -13,11 +17,6 @@ pipeline {
                 npm install
                 npm run build
             '''
-          }
-        }
-        stage('Terraform plan') {
-          steps {
-            sh 'terraform plan -out'
           }
         }
   }
