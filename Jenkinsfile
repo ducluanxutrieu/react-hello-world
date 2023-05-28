@@ -1,9 +1,7 @@
 pipeline {
-  agent { 
-    agent {
+   agent {
       label "slave"
     }
-  }
 
 //   parameters {
 //     string(name: 'gitBranch', defaultValue: 'master', description: 'This is the first param')
