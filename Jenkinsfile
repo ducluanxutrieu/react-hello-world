@@ -8,7 +8,7 @@ pipeline {
   }
 
   stages {
-        stage('Check node version) {
+        stage('Check node version') {
               steps {
                   sh 'npm --version'
               }
@@ -21,7 +21,7 @@ pipeline {
             """
           }
         }
-       stage('') {
+       stage('Build package') {
           steps {
             sh '''
                 npm run build
