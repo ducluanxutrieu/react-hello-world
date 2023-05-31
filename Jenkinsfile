@@ -16,7 +16,7 @@ pipeline {
         stage('Install dependency') {
           steps {
             sh """
-               echo "Git branch: ${param.gitBranch}"
+               echo "Git branch: ${params.gitBranch}"
                npm install
             """
           }
