@@ -3,16 +3,27 @@ pipeline {
       label "slave"
     }
 
-//   parameters {
-//     string(name: 'gitBranch', defaultValue: 'master', description: 'This is the first param')
-//   }
+  parameters {
+    string(name: 'gitBranch', defaultValue: 'master', description: 'This is the first param')
+  }
 
   stages {
-        stage('Build Package') {
+        stage('Check node version) {
+              steps {
+                  sh 'npm --version'
+              }
+           }
+        stage('Install dependency') {
+          steps {
+            sh """
+               echo "Git branch: ${param.gitBranch}"
+               npm install
+            """
+          }
+        }
+       stage('') {
           steps {
             sh '''
-                npm --version
-                npm install
                 npm run build
             '''
           }
