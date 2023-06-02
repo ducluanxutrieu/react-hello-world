@@ -2,7 +2,6 @@ pipeline {
   agent {
     docker {
       image 'gradle:6.7-jdk11'
-      label 'kitchen'
     }
   }
 
