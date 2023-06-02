@@ -1,7 +1,7 @@
 pipeline {
   agent {
     docker {
-      image 'gradle:6.7-jdk11'
+      image 'amazoncorretto:17'
     }
   }
 
