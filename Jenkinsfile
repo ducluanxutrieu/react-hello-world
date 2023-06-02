@@ -1,9 +1,9 @@
 pipeline {
-agent {
-  docker {
-    image 'gradle:6.7-jdk11'
+  agent {
+    docker {
+      image 'gradle:6.7-jdk11'
+    }
   }
-            }
 
 
   parameters {
