@@ -1,7 +1,14 @@
 pipeline {
-   agent {
-      label "slave"
-    }
+agent {
+                docker {
+                    image 'gradle:6.7-jdk11'
+                    // Run the container on the node specified at the
+                    // top-level of the Pipeline, in the same workspace,
+                    // rather than on a new node entirely:
+                    reuseNode true
+                }
+            }
+
 
   parameters {
     string(name: 'gitBranch', defaultValue: 'master', description: 'This is the first param')
@@ -10,7 +17,7 @@ pipeline {
   stages {
         stage('Check node version') {
               steps {
-                  sh 'npm --version'
+                  sh 'mvn --version'
               }
            }
         stage('Install dependency') {
