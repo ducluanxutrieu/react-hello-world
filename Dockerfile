@@ -1,14 +1,11 @@
-FROM nginx:stable-alpine3.17
+FROM node:20.10.0-slim
 
-## Step 1:
-# Create a working directory
+WORKDIR /app
 
-## Step 2:
-# Copy source code to working directory
-COPY build /usr/share/nginx/html
+COPY package*.json .
+RUN npm install --only=production
 
-## Step 4:
-# Expose port 80
-EXPOSE 80
-## Step 5:
-# Run app.py at container launch
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["npm","start"]
